@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Annotator Bias Study</title>
+  <link rel="stylesheet" href="https://unpkg.com/intro.js/minified/introjs.min.css">
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+    #login-section, #annotation-section, #practice-section, #start-annotation-section, #sanity-check-section {
+      max-width: 700px;
+      margin: auto;
+      display: none;
+    }
+    .card {
+      border: 1px solid #ccc;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .card:hover {
+      background: #eef;
+    }
+    .selected {
+      background-color: #d0f0d0 !important;
+    }
+    .tooltip {
+      display: inline-block;
+      border-bottom: 1px dotted black;
+      cursor: help;
+    }
+    .progress-bar {
+      height: 20px;
+      background: #ddd;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .progress {
+      height: 100%;
+      background: #4caf50;
+      width: 0%;
+    }
+    button {
+      padding: 10px 15px;
+      margin-top: 10px;
+    }
+    .timer {
+      float: right;
+      font-size: 14px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+
+<!-- IRB Consent Modal -->
+<div id="consent-modal">
+  <h2>Consent to Participate</h2>
+  <p>By clicking "I Consent", you agree to participate in this IRB-approved study.</p>
+  <button onclick="acceptConsent()">I Consent</button>
+</div>
+
+<!-- Login section -->
+<div id="login-section">
+  <h2>Login</h2>
+  <input type="text" id="annotator-id" placeholder="Enter your ID" />
+  <button onclick="startPractice()">Start Guided Practice</button>
+</div>
+
+<!-- Guided practice section -->
+<div id="practice-section">
+  <h3 data-intro="This is the sentence in Language A." data-step="1">Language A Sentence:</h3>
+  <p id="practice-sentence"></p>
+  <h4 data-intro="Here is a word-by-word translation." data-step="2">Word-by-Word Translation:</h4>
+  <ul id="practice-word-help"></ul>
+  <h4 data-intro="Choose the best translation." data-step="3">Candidate Translations:</h4>
+  <div id="practice-translation-options"></div>
+  <h4 data-intro="You can also provide your own translation." data-step="4">Suggest your own translation:</h4>
+  <textarea rows="3" style="width:100%;"></textarea>
+  <button data-intro="Once done, click here to proceed." data-step="5" onclick="endPractice()">Next</button>
+</div>
+
+<!-- Transition screen before real task -->
+<div id="start-annotation-section">
+  <h2>You're about to start the actual annotation task.</h2>
+  <button onclick="showSanityCheck()">Begin</button>
+</div>
+
+<!-- Sanity check screen -->
+<div id="sanity-check-section">
+  <h2>Sanity Check</h2>
+  <p>How are you feeling right now? (1 = very bad, 10 = excellent)</p>
+  <input type="range" min="1" max="10" id="mood-rating" />
+  <span id="mood-value">5</span>
+  <br/>
+  <button onclick="startSession()">Continue to Annotation</button>
+</div>
+
+<!-- Annotation section -->
+<div id="annotation-section">
+  <div class="progress-bar">
+    <div class="progress" id="progress"></div>
+  </div>
+  <div class="timer" id="timer">Time: 0s</div>
+  <h3>Language A Sentence:</h3>
+  <p id="source-sentence"></p>
+  <h4>Word-by-Word Translation:</h4>
+  <ul id="word-help"></ul>
+  <h4>Candidate Translations:</h4>
+  <div id="translation-options"></div>
+  <h4>Suggest your own translation (optional):</h4>
+  <textarea id="custom-translation" rows="3" style="width:100%;"></textarea>
+  <button onclick="nextSentence()">Next</button>
+  <button onclick="downloadAnnotations()">Download Annotations</button>
+</div>
+
+<script src="https://unpkg.com/intro.js/minified/intro.min.js"></script>
+<script>
+const sentences = [
+  {
+    source: "Същността на знанието е...",
+    words: [
+      { word: "Същността", meaning: "Essence", example: "Същността на живота..." },
+      { word: "на", meaning: "of", example: "" },
+      { word: "знанието", meaning: "knowledge", example: "Знанието е сила." }
+    ],
+    candidates: [
+      "The essence of knowledge is...",
+      "Knowledge has its essence in...",
+      "The core of knowledge lies in..."
+    ]
+  }
+];
+
+let currentIndex = 0;
+let timerInterval;
+let timeSpent = 0;
+
+document.getElementById("mood-rating").addEventListener("input", function() {
+  document.getElementById("mood-value").innerText = this.value;
+});
+
+function acceptConsent() {
+  document.getElementById("consent-modal").style.display = "none";
+  document.getElementById("login-section").style.display = "block";
+}
+
+function startPractice() {
+  document.getElementById("login-section").style.display = "none";
+  document.getElementById("practice-section").style.display = "block";
+  document.getElementById("practice-sentence").innerText = sentences[0].source;
+  const wordHelp = document.getElementById("practice-word-help");
+  wordHelp.innerHTML = "";
+  sentences[0].words.forEach(({ word, meaning }) => {
+    const li = document.createElement("li");
+    li.innerText = `${word} → ${meaning}`;
+    wordHelp.appendChild(li);
+  });
+  const options = document.getElementById("practice-translation-options");
+  options.innerHTML = "";
+  sentences[0].candidates.forEach(candidate => {
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerText = candidate;
+    options.appendChild(div);
+  });
+  introJs().start();
+}
+
+function endPractice() {
+  document.getElementById("practice-section").style.display = "none";
+  document.getElementById("start-annotation-section").style.display = "block";
+}
+
+function showSanityCheck() {
+  document.getElementById("start-annotation-section").style.display = "none";
+  document.getElementById("sanity-check-section").style.display = "block";
+}
+
+function startSession() {
+  const id = document.getElementById("annotator-id").value;
+  if (!id) return alert("Please enter an ID.");
+  localStorage.setItem("annotatorId", id);
+  document.getElementById("sanity-check-section").style.display = "none";
+  document.getElementById("annotation-section").style.display = "block";
+  loadSentence();
+  startTimer();
+}
+
+function loadSentence() {
+  const sentence = sentences[currentIndex];
+  document.getElementById("source-sentence").innerText = sentence.source;
+  const wordHelp = document.getElementById("word-help");
+  wordHelp.innerHTML = "";
+  sentence.words.forEach(({ word, meaning, example }) => {
+    const li = document.createElement("li");
+    li.innerHTML = `<span class="tooltip" title="${example || 'No example'}">${word}</span> → ${meaning}`;
+    wordHelp.appendChild(li);
+  });
+  const options = document.getElementById("translation-options");
+  options.innerHTML = "";
+  sentence.candidates.forEach(candidate => {
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerText = candidate;
+    div.onclick = () => {
+      document.querySelectorAll(".card").forEach(c => c.classList.remove("selected"));
+      div.classList.add("selected");
+    };
+    options.appendChild(div);
+  });
+  updateProgress();
+  document.getElementById("custom-translation").value = "";
+  resetTimer();
+}
+
+function nextSentence() {
+  saveAnnotation();
+  if (currentIndex < sentences.length - 1) {
+    currentIndex++;
+    loadSentence();
+  } else {
+    alert("Done! All sentences annotated.");
+    location.reload();
+  }
+}
+
+function saveAnnotation() {
+  const id = localStorage.getItem("annotatorId");
+  const selected = document.querySelector(".card.selected");
+  const custom = document.getElementById("custom-translation").value;
+  const annotation = {
+    sentenceIndex: currentIndex,
+    selected: selected ? selected.innerText : null,
+    custom,
+    timeSpent
+  };
+  localStorage.setItem(`annotation_${id}_${currentIndex}`, JSON.stringify(annotation));
+}
+
+function updateProgress() {
+  const percent = ((currentIndex + 1) / sentences.length) * 100;
+  document.getElementById("progress").style.width = `${percent}%`;
+}
+
+function startTimer() {
+  timerInterval = setInterval(() => {
+    timeSpent++;
+    document.getElementById("timer").innerText = `Time: ${timeSpent}s`;
+  }, 1000);
+}
+
+function resetTimer() {
+  clearInterval(timerInterval);
+  timeSpent = 0;
+  startTimer();
+}
+
+function downloadAnnotations() {
+  const id = localStorage.getItem("annotatorId");
+  if (!id) return alert("No annotator ID found.");
+  const annotations = [];
+  for (let i = 0; i < sentences.length; i++) {
+    const data = localStorage.getItem(`annotation_${id}_${i}`);
+    if (data) annotations.push(JSON.parse(data));
+  }
+  const blob = new Blob([JSON.stringify(annotations, null, 2)], {
+    type: "application/json"
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `annotations_${id}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+window.onload = () => {
+  document.getElementById("consent-modal").style.display = "block";
+};
+</script>
+
+</body>
+</html>
