@@ -1,0 +1,35 @@
+{
+    "project": "AI-powered Web App",
+    "environment": {
+        "os": {
+            "host": "Windows 11 Pro (version 10.0.26100.3476)",
+            "wsl": "Ubuntu 22.04.5 LTS",
+            "wsl_version": "WSL2 2.4.12.0",
+            "wsl_kernel": "5.15.167.4-1"
+        },
+        "ide": "VS Code",
+        "dockerized": true
+    },
+    "tech_stack": {
+        "backend": {
+            "language": "Python",
+            "version": "3.11.8",
+            "framework": "FastAPI 0.110.1",
+            "server": "Uvicorn 0.29.0"
+        },
+        "frontend": {
+            "language": "JavaScript",
+            "framework": "React 18.2.0",
+            "bundler": "Vite 5.1.6",
+            "styling": "TailwindCSS 3.4.1"
+        }
+    },
+    "current_context": {
+        "file": "backend/api/auth.py",
+        "task": "Implement JWT authentication",
+        "recent_changes": [
+            "Updated dependencies",
+            "Refactored user auth module"
+        ]
+    }
+}
