@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Question {{ question_number }} of {{ total_questions }}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'lrl_app/styles.css' %}">
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            background: #f9f9f9;
+        }
+        .question-section {
+            max-width: 700px;
+            margin: auto;
+        }
+        .translations-list {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            gap: 20px;
+        }
+        .translation-box {
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            padding: 10px 5px;
+            min-width: 80px;
+            min-height: 10px;
+            cursor: pointer;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: #fff;
+            text-align: center;
+            font-size: 1.1em;
+            position: relative;
+        }
+        .translation-radio {
+            display: none;
+        }
+        .translation-radio:checked + .translation-box {
+            border-color: #2ecc40;
+            box-shadow: 0 0 0 2px #2ecc40;
+            background: #f6fff6;
+        }
+    </style>
+</head>
+<body>
+    <div class="question-section">
+        <h2>Question {{ question_number }} of {{ total_questions }}</h2>
+        <p>{{ question_text }}</p>
+        <form method="post">
+            {% csrf_token %}
+            <h3>This is the sentence in Language A:</h3>
+            <div style="margin-bottom: 20px;">
+                {% for word, translation in wbw.items %}
+                    <div style="display: inline-block; text-align: center; margin-right: 10px;">
+                        <span style="font-weight: bold;">{{ word }}</span><br>
+                        <span style="font-size: 0.95em; color: #2d6cdf;">
+                            {{ translation }}
+                        </span>
+                    </div>
+                {% endfor %}
+            </div>
+            <h4>Candidate Translations:</h4>
+            <ul style="list-style: none; padding: 0;">
+                {% for translation in translations|slice:":3" %}
+                    <li style="margin-bottom: 8px;">
+                        <label style="display: flex; align-items: center;">
+                            <input type="radio" class="translation-radio" name="selected_translation" value="{{ translation }}">
+                            <span class="translation-box" style="flex: 1; margin-left: 10px;">{{ translation }}</span>
+                        </label>
+                    </li>
+                {% endfor %}
+                <li style="margin-bottom: 8px;">
+                    <label style="display: flex; align-items: center;">
+                        <input type="radio" class="translation-radio" name="selected_translation" value="__custom__" id="custom-translation-radio">
+                        <span class="translation-box" style="flex: 1; margin-left: 10px;">
+                            <input type="text" name="custom_translation" id="custom-translation-input" placeholder="Suggest your own translation" style="width: 350px; height: 40px; font-size: 1em; border: none; outline: none; background: transparent;">
+                        </span>
+                    </label>
+                </li>
+            </ul>
+            <br>
+            <button type="submit">
+                {% if question_number < total_questions %}Next{% else %}Finish{% endif %}
+            </button>
+        </form>
+    </div>
+    <script>
+        // Auto-select the radio when the custom input is focused
+        document.addEventListener('DOMContentLoaded', function() {
+            var customInput = document.getElementById('custom-translation-input');
+            var customRadio = document.getElementById('custom-translation-radio');
+            if(customInput && customRadio) {
+                customInput.addEventListener('focus', function() {
+                    customRadio.checked = true;
+                });
+            }
+        });
+    </script>
+</body>
+</html>

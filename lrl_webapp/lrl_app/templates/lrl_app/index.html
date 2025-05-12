@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Consent to Participate</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'lrl_app/styles.css' %}">
+</head>
+<body>
+    <!-- IRB Consent Modal -->
+    <div id="consent-modal">
+      <h2>Consent to Participate</h2>
+      <p>By clicking "I Consent", you agree to participate in this IRB-approved study.</p>
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit">I Consent</button>
+      </form>
+    </div>
+    <script src="{% static 'lrl_app/scripts.js' %}"></script>
+</body>
+</html>

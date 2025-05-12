@@ -1,0 +1,18 @@
+<!-- lrl_webapp/lrl_app/templates/lrl_app/success.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Survey Results</title>
+</head>
+<body>
+    <h2>Your Answers</h2>
+    <ol>
+        {% for item in results %}
+            <li>
+                <strong>{{ item.question }}</strong><br>
+                Answer: {{ item.answer }}
+            </li>
+        {% endfor %}
+    </ol>
+</body>
+</html>

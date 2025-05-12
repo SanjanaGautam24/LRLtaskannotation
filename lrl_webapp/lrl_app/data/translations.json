@@ -1,0 +1,155 @@
+{
+  "sentences": [
+    {
+      "text": "El gato duerme en la silla.",
+      "translations": [
+        "The cat sleeps on the chair.",
+        "The cat is sleeping on the chair.",
+        "The cat sleeps in the chair."
+      ],
+      "word_by_word": {
+        "El": "The",
+        "gato": "cat",
+        "duerme": "sleeps",
+        "en": "on",
+        "la": "the",
+        "silla": "chair"
+      }
+    },
+    {
+      "text": "Ella cocina muy bien.",
+      "translations": [
+        "She cooks very well.",
+        "She is a great cook.",
+        "She cooks really well."
+      ],
+      "word_by_word": {
+        "Ella": "She",
+        "cocina": "cooks",
+        "muy": "very",
+        "bien": "well"
+      }
+    },
+    {
+      "text": "Vamos al parque cada domingo.",
+      "translations": [
+        "We go to the park every Sunday.",
+        "We visit the park each Sunday.",
+        "We head to the park on Sundays."
+      ],
+      "word_by_word": {
+        "Vamos": "We go",
+        "al": "to the",
+        "parque": "park",
+        "cada": "every",
+        "domingo": "Sunday"
+      }
+    },
+    {
+      "text": "Tengo hambre y sed.",
+      "translations": [
+        "I am hungry and thirsty.",
+        "I feel hungry and thirsty.",
+        "I'm starving and thirsty."
+      ],
+      "word_by_word": {
+        "Tengo": "I have",
+        "hambre": "hunger",
+        "y": "and",
+        "sed": "thirst"
+      }
+    },
+    {
+      "text": "¿Dónde está el baño?",
+      "translations": [
+        "Where is the bathroom?",
+        "Where's the restroom?",
+        "Where can I find the toilet?"
+      ],
+      "word_by_word": {
+        "¿Dónde": "Where",
+        "está": "is",
+        "el": "the",
+        "baño": "bathroom"
+      }
+    },
+    {
+      "text": "El sol brilla en el cielo.",
+      "translations": [
+        "The sun shines in the sky.",
+        "The sun is shining in the sky.",
+        "The sun glows above."
+      ],
+      "word_by_word": {
+        "El": "The",
+        "sol": "sun",
+        "brilla": "shines",
+        "en": "in",
+        "el": "the",
+        "cielo": "sky"
+      }
+    },
+    {
+      "text": "Necesito ayuda con mi tarea.",
+      "translations": [
+        "I need help with my homework.",
+        "I need assistance with my assignment.",
+        "Can you help me with my homework?"
+      ],
+      "word_by_word": {
+        "Necesito": "I need",
+        "ayuda": "help",
+        "con": "with",
+        "mi": "my",
+        "tarea": "homework"
+      }
+    },
+    {
+      "text": "Los niños juegan en el jardín.",
+      "translations": [
+        "The children play in the garden.",
+        "The kids are playing in the yard.",
+        "Children are playing outside."
+      ],
+      "word_by_word": {
+        "Los": "The",
+        "niños": "children",
+        "juegan": "play",
+        "en": "in",
+        "el": "the",
+        "jardín": "garden"
+      }
+    },
+    {
+      "text": "Me gusta leer libros por la noche.",
+      "translations": [
+        "I like reading books at night.",
+        "I enjoy reading at night.",
+        "Reading books at night is my favorite."
+      ],
+      "word_by_word": {
+        "Me": "I",
+        "gusta": "like",
+        "leer": "to read",
+        "libros": "books",
+        "por": "at",
+        "la": "the",
+        "noche": "night"
+      }
+    },
+    {
+      "text": "Hoy hace mucho frío.",
+      "translations": [
+        "It's very cold today.",
+        "Today is really cold.",
+        "It's freezing today."
+      ],
+      "word_by_word": {
+        "Hoy": "Today",
+        "hace": "is (makes)",
+        "mucho": "very/much",
+        "frío": "cold"
+      }
+    }
+  ]
+}
