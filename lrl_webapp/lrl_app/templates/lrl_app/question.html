@@ -53,26 +53,40 @@
             <h3>This is the sentence in Language A:</h3>
             <div style="margin-bottom: 20px;">
                 {% for word, translation in wbw.items %}
-                    <div style="display: inline-block; text-align: center; margin-right: 10px;">
-                        <span style="font-weight: bold;">{{ word }}</span><br>
-                        <span style="font-size: 0.95em; color: #2d6cdf;">
-                            {{ translation }}
+                    <span class="original-word" style="display: inline-block; text-align: center; margin-right: 10px; font-weight: bold; cursor: pointer; position: relative;" onclick="showWordActions(this, '{{ word|escapejs }}', '{{ translation|escapejs }}')">
+                        {{ word }}
+                        <!-- Action buttons (hidden by default) -->
+                        <span class="word-actions" style="display: none; position: absolute; left: 50%; transform: translateX(-50%); top: 120%; background: #fff; border: 1px solid #ccc; border-radius: 6px; padding: 6px; z-index: 10;">
+                            <button type="button" onclick="showTranslation(event, '{{ translation|escapejs }}')">Show Translation</button>
+                            <button type="button" onclick="useInSentence(event, '{{ word|escapejs }}')">Use in Sentence</button>
+                            <span class="word-translation" style="display: none; margin-left: 8px; color: #2d6cdf;"></span>
                         </span>
-                    </div>
+                    </span>
                 {% endfor %}
             </div>
             <h4>Candidate Translations:</h4>
             <ul style="list-style: none; padding: 0;">
-                {% for translation in translations|slice:":3" %}
+                {% for translation, score in translation_pairs %}
                     <li style="margin-bottom: 8px;">
                         <label style="display: flex; align-items: center;">
+                            <span style="margin-right: 10px; cursor: pointer;" onclick="speakText('{{ translation|escapejs }}')">
+                                🔊
+                            </span>
                             <input type="radio" class="translation-radio" name="selected_translation" value="{{ translation }}">
-                            <span class="translation-box" style="flex: 1; margin-left: 10px;">{{ translation }}</span>
+                            <span class="translation-box" style="flex: 1; margin-left: 10px;">
+                                {{ translation }}
+                            </span>
+                            <span style="display:block; font-size:0.95em; color:#888; margin-left: 16px;">
+                                Confidence: {{ score }}
+                            </span>
                         </label>
                     </li>
                 {% endfor %}
                 <li style="margin-bottom: 8px;">
                     <label style="display: flex; align-items: center;">
+                        <span style="margin-right: 10px; cursor: pointer;" onclick="speakCustomText()">
+                            🔊
+                        </span>
                         <input type="radio" class="translation-radio" name="selected_translation" value="__custom__" id="custom-translation-radio">
                         <span class="translation-box" style="flex: 1; margin-left: 10px;">
                             <input type="text" name="custom_translation" id="custom-translation-input" placeholder="Suggest your own translation" style="width: 350px; height: 40px; font-size: 1em; border: none; outline: none; background: transparent;">
@@ -84,11 +98,25 @@
             <button type="submit">
                 {% if question_number < total_questions %}Next{% else %}Finish{% endif %}
             </button>
+            <div id="sentence-output" style="margin-top: 20px; font-size: 1.1em; color: #2d6cdf;"></div>
         </form>
     </div>
     <script>
-        // Auto-select the radio when the custom input is focused
+        // Toggle word-by-word translation visibility
         document.addEventListener('DOMContentLoaded', function() {
+            var btn = document.getElementById('toggle-wbw-btn');
+            var wbwWords = document.querySelectorAll('.wbw-translation');
+            btn.addEventListener('click', function() {
+                wbwWords.forEach(function(span) {
+                    if (span.style.display === 'none') {
+                        span.style.display = 'inline';
+                    } else {
+                        span.style.display = 'none';
+                    }
+                });
+            });
+
+            // Auto-select the radio when the custom input is focused
             var customInput = document.getElementById('custom-translation-input');
             var customRadio = document.getElementById('custom-translation-radio');
             if(customInput && customRadio) {
@@ -96,6 +124,62 @@
                     customRadio.checked = true;
                 });
             }
+        });
+
+        // Speak the given text using browser TTS
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                var utterance = new SpeechSynthesisUtterance(text);
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert("Sorry, your browser doesn't support text-to-speech.");
+            }
+        }
+        // Speak the custom translation input
+        function speakCustomText() {
+            var customInput = document.getElementById('custom-translation-input');
+            if (customInput && customInput.value.trim() !== "") {
+                speakText(customInput.value);
+            }
+        }
+
+        // Show action buttons for the clicked word
+        function showWordActions(span, word, translation) {
+            // Hide any other open actions
+            document.querySelectorAll('.word-actions').forEach(function(el) {
+                el.style.display = 'none';
+            });
+            // Show for this word
+            var actions = span.querySelector('.word-actions');
+            actions.style.display = 'block';
+            // Hide translation text if previously shown
+            var translationSpan = actions.querySelector('.word-translation');
+            if (translationSpan) translationSpan.style.display = 'none';
+            // Prevent event bubbling to document
+            event.stopPropagation();
+        }
+
+        // Show translation for the word
+        function showTranslation(event, translation) {
+            event.stopPropagation();
+            var actions = event.target.closest('.word-actions');
+            var translationSpan = actions.querySelector('.word-translation');
+            translationSpan.textContent = translation;
+            translationSpan.style.display = 'inline';
+        }
+
+        // Example: Use in sentence (show below the question)
+        function useInSentence(event, word) {
+            event.stopPropagation();
+            var outputDiv = document.getElementById('sentence-output');
+            outputDiv.textContent = "Example sentence using '" + word + "': ____________";
+        }
+
+        // Hide actions when clicking elsewhere
+        document.addEventListener('click', function() {
+            document.querySelectorAll('.word-actions').forEach(function(el) {
+                el.style.display = 'none';
+            });
         });
     </script>
 </body>

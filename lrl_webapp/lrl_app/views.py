@@ -31,11 +31,16 @@ def question(request, number):
     item = questions[number-1]
     text = item['text']
     translations = item['translations']
+    if 'translation_scores' in item:
+        translation_scores = item['translation_scores']
+    else:
+        translation_scores = [0.9, 0.8, 0.7] # Example fallback
+    translation_pairs = list(zip(translations, translation_scores))
     wbw = item['word_by_word']
     return render(request, "lrl_app/question.html", {
         'question_number': number,
         'text': text,
-        'translations': translations,
+        'translation_pairs': translation_pairs,
         'wbw': wbw,
         'total_questions': len(questions)
     })
